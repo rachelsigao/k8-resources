@@ -1,3 +1,4 @@
+# Creating a PersistentVolume that represents an EBS volume in AWS. The volume is configured with access mode ReadWriteOnce, a storage capacity of 20Gi, and it uses the EBS CSI driver to specify the volume handle and file system type.
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -12,6 +13,7 @@ spec:
     fsType: ext4
     volumeHandle: vol-072a8f44214a23f64
 ---
+# Creating a PersistentVolumeClaim to request storage from the previously created PersistentVolume. The claim specifies the desired storage size and access mode, and it will bind to the PersistentVolume that matches these requirements.
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -25,6 +27,7 @@ spec:
     requests:
       storage: 15Gi
 ---
+# Creating a pod that uses the PersistentVolumeClaim to mount the EBS volume at /usr/share/nginx/html. The pod is scheduled to run on a specific node in the us-east-1c availability zone, and it runs an nginx container that serves content from the mounted volume.
 apiVersion: v1
 kind: Pod
 metadata:
@@ -46,6 +49,7 @@ spec:
     persistentVolumeClaim:
       claimName: ebs-static
 ---
+# Creating a service to expose the nginx application on port 80, and it will route traffic to the pods with matching labels.
 apiVersion: v1
 kind: Service
 metadata:
