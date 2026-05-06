@@ -1,16 +1,21 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
+  # Policy name
   name: mongodb-accept-catalogue
+  # Namespace where this policy is applied
   namespace: roboshop
 spec:
+  # Target pods: this policy applies only to MongoDB database pods
   podSelector:
     matchLabels:
       tier: database
       component: mongodb
+  # This policy controls only incoming traffic to selected pods
   policyTypes:
   - Ingress
   ingress:
+  # Allow traffic only from catalogue pods
   - from:
     - podSelector:
         matchLabels:
@@ -18,6 +23,7 @@ spec:
           project: roboshop
           tier: app
     ports:
+    # Allow traffic on MongoDB port 27017
     - protocol: TCP
       port: 27017
 

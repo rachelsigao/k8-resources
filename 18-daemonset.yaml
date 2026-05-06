@@ -1,11 +1,14 @@
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
+  # DaemonSet name shown in kubectl output
   name: fluentd-elasticsearch
+  # kube-system is used for cluster-level components
   namespace: kube-system
   labels:
     k8s-app: fluentd-logging
 spec:
+  # Selector must match template labels
   selector:
     matchLabels:
       name: fluentd-elasticsearch
@@ -14,6 +17,7 @@ spec:
       labels:
         name: fluentd-elasticsearch
     spec:
+      # Tolerations allow pods to run on tainted nodes
       tolerations:
       # these tolerations are to have the daemonset runnable on control plane nodes
       # remove them if your control plane nodes should not run pods
@@ -27,6 +31,7 @@ spec:
       - name: fluentd-elasticsearch
         # this pod collects the host logs and send them to ELK
         image: quay.io/fluentd_elasticsearch/fluentd:v5.0.1
+        # Resource requests/limits protect node stability
         resources:
           limits:
             memory: 200Mi
@@ -35,13 +40,16 @@ spec:
             memory: 200Mi
         volumeMounts:
         - name: varlog
+          # Read host log files from the node
           mountPath: /var/log
           readOnly: true
       # it may be desirable to set a high priority class to ensure that a DaemonSet Pod
       # preempts running Pods
       # priorityClassName: important
+      # Grace period before force-killing pod during shutdown
       terminationGracePeriodSeconds: 30
       volumes:
       - name: varlog
         hostPath:
+          # Mount node's /var/log directory into the pod
           path: /var/log
